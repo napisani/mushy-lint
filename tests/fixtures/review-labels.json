@@ -1,0 +1,31 @@
+{
+  "examples": [
+    {
+      "id": "ordering-without-order-assertion",
+      "line": 1,
+      "rule": "tests.title-describes-check",
+      "expectedYes": false,
+      "expectedEligible": true,
+      "expectedDecision": "address",
+      "reason": "Object equality ignores key order; the title claims a property the assertion does not test."
+    },
+    {
+      "id": "ordering-with-order-assertion",
+      "line": 5,
+      "rule": "tests.title-describes-check",
+      "expectedYes": true,
+      "expectedEligible": true,
+      "expectedDecision": "leave",
+      "reason": "Object.keys explicitly checks key order."
+    },
+    {
+      "id": "empty-callback-comment",
+      "line": 10,
+      "rule": "comments.narrates-code",
+      "expectedYes": false,
+      "expectedEligible": true,
+      "expectedDecision": "leave",
+      "reason": "The comment explains a condition invisible in an empty callback and needs its enclosing catch call."
+    }
+  ]
+}

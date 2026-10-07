@@ -1,0 +1,57 @@
+{
+  "skill_name": "mushy-lint-rule-config",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create mushy-lint.yaml using only this skill for mushy-lint documentation. Our TS/TSX application lives under src/ with generated code under src/generated/. AGENTS.md says comments should explain why rather than narrating code, imports must be alphabetized, caught errors must communicate failure, and hand-written object types must not duplicate an existing type anywhere in the repo. Oxlint already handles imports. In src/service.ts, `// Trim whitespace` precedes `function normalize(value: string) { return value.trim(); }`; another comment explains a timeout workaround. One function catches and returns an empty list, another catches and rethrows, and an arrow function has no catch. Select suitable rules and explain what to defer. Use OpenRouter. You have no CLI available and no permission to send source to a provider.",
+      "expected_output": "A valid version-2 OpenRouter configuration for comment quality and caught-error handling, plus candidate decisions and unverified-validation notes. Import ordering stays with Oxlint and project-wide type duplication is deferred.",
+      "expectations": [
+        "The configuration explicitly pairs provider openrouter with model typesafe/jev-1.13 and contains no credential value.",
+        "The comment rule uses the built-in comment target and refers to comment and code evidence.",
+        "The error rule references a document-level whole-function target including arrows and a named condition through includeIf; no YAML aliases or inline gates are needed.",
+        "The configuration admits src/**/*.ts and src/**/*.tsx and excludes generated source.",
+        "The output rejects deterministic import ordering as a mushy-lint candidate and defers cross-file type equivalence without inventing context providers.",
+        "The output neither adds thresholds nor claims extraction or authenticated quality testing occurred."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Repair this existing configuration using only the skill, not mushy-lint source or README. Preserve the legacy section and its identifiers. The team wants the application rule to classify whether catches discard failure, including methods and arrows, but does not need cross-file facts. Current YAML:\n```yaml\nversion: 1\nclassification:\n  provider: openrouter\n  concurrency: 4\nsections:\n  - name: application\n    language: typescript\n    files:\n      include: [\"src/**/*.ts\", \"src/**/*.tsx\"]\n    targets:\n      function:\n        root: code\n        query: |\n          (function_declaration) @code\n          (arrow_function) @arrow\n    rules:\n      - id: errors.discards-failure\n        target: function\n        noul: Does code discard a caught error?\n        threshold: 0.8\n        context: [existing_symbols]\n        files:\n          include: [\"src/services/**\"]\n  - name: legacy\n    language: typescript\n    files:\n      include: [\"legacy/**/*.ts\"]\n    rules:\n      - id: comments.reason\n        target: comment\n        score: Does comment explain a constraint in code?\n```\nThe errors rule should only apply under src/services/. You have no installed CLI or credentials.",
+      "expected_output": "A version-2 rewrite with document-level records that retains unrelated legacy-directory rules, scopes, and identifiers without a version-1 compatibility layer. The application uses a services file set, all function patterns capture code, unsupported fields are removed, and OpenRouter model selection is fixed without changing concurrency.",
+      "expectations": [
+        "The legacy section, rule ID, question, and file scope are preserved.",
+        "The rule uses score instead of noul and omits threshold and unsupported required context.",
+        "Every query pattern supplies exactly one code root and the target includes arrow_function and method_definition.",
+        "The application section references a named file set whose include globs restrict TS/TSX service files; rule-level file sets contain exclusions only.",
+        "Provider openrouter has an explicit qualified model while concurrency remains 4.",
+        "The output states validation is unverified and gives credential-free dry-run commands rather than pretending to run them."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Audit this rule using only this skill as documentation. Named target function uses root code, language typescript, and query `(function_declaration) @code`; includeIf references the named condition catches with language typescript and query `(catch_clause) @problem`; score asks whether the whole function hides a caught error. Our fixture is `function outer() { const inner = () => { try { load(); } catch {} }; return inner; }`. I expected outer to be skipped because only the nested arrow has a catch, expected problem to appear in model state, and expected the result to point at whichever catch the model thinks is wrong. Also, when every score is above 0.95, why does CI still exit zero? Explain the actual behavior, recommend a supported configuration strategy if we want per-catch judgments, and do not invent own-scope flags or thresholds. No provider calls are authorized.",
+      "expected_output": "An explanation of nested root-subtree eligibility, gate capture isolation, declaration-only target coverage, static locations, and score-independent exit status, with a target/evidence strategy for specifically identified catches rather than inferred offending locations.",
+      "expectations": [
+        "The output explains that outer qualifies because includeIf searches nested syntax and the arrow is not independently targeted by the declaration-only query.",
+        "The output states problem is not part of state and includeIf cannot select a location.",
+        "The output uses explicit target/location captures and a question about the selected catch for per-catch judgments, retaining necessary surrounding evidence.",
+        "The output warns that distinct query matches remain distinct targets even when they share a function root.",
+        "The output explains that high scores do not mean CI findings and operational exit zero is expected for complete evaluation.",
+        "The output does not configure own-scope-only behavior, thresholds, model-inferred locations, or fabricated cross-file context."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Audit the entire repository's conventions before generating configuration. The inventory has root AGENTS.md, packages/ui/CLAUDE.md, .claude/rules/testing.md, .claude/rules/deploy.md, and an unreadable packages/private/AGENTS.md. Root guidance requires rationale comments and alphabetized imports. UI guidance requires caller-facing documentation. Testing guidance requires truthful test titles, one assertion per test, and no duplicated setup that obscures the scenario. Deployment guidance requires human approval before production pushes. Oxlint already handles import order. The private policy cannot be read. Produce the inventory and candidate decisions, then a version-2 config without YAML anchors. You have no CLI and no permission to classify code.",
+      "expected_output": "A source inventory and complete scoped candidate table preceding a version-2 configuration, with deterministic/workflow/deferred decisions and an explicit unreadable-policy coverage gap.",
+      "expectations": [
+        "Every named policy file is accounted for, including the unreadable private policy.",
+        "Every stated convention receives a configured, deterministic, deferred, or workflow decision with evidence and scope.",
+        "UI-only caller-facing documentation does not silently become a whole-repository policy.",
+        "Reusable targets, conditions, file sets, and exclusion lists use document-level named records, not YAML anchors or legacy syntax.",
+        "The response separates unverified extraction from unverified classifier quality and proposes labeled affirmative/negative/gated examples.",
+        "No provider call, invented private policy, universal score cutoff, or compatibility reader is introduced."
+      ]
+    }
+  ]
+}

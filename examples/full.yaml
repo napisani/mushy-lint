@@ -1,0 +1,207 @@
+version: 2
+classification:
+  provider: openrouter
+  model: typesafe/jev-1.13
+  apiKeyEnv: OPENROUTER_API_KEY
+  concurrency: 8
+  requestsPerSecond: 40
+  maxInputBytes: 64000
+  maxQuestions: 64
+  timeoutMs: 30000
+  retries: 2
+maxPlanBytes: 268435456
+
+globs:
+  source_code: ["src/**/*.{ts,tsx,mts,cts}"]
+  test_code: ["src/**/*.{test,spec}.{ts,tsx,mts,cts}", "tests/**/*.{ts,tsx,mts,cts}"]
+  generated: ["**/*.d.{ts,mts,cts}", "**/generated/**", "**/node_modules/**"]
+
+fileSets:
+  source:
+    include: ["scripts/**/*.{ts,tsx,mts,cts}"]
+    includeGlobs: [source_code]
+    exclude: ["src/vendor/**"]
+    excludeGlobs: [generated]
+  tests:
+    includeGlobs: [test_code]
+    excludeGlobs: [generated]
+  e2e:
+    include: ["tests/e2e/**/*.{ts,tsx,mts,cts}"]
+    excludeGlobs: [generated]
+  runtime_only:
+    exclude: ["**/fixtures/**"]
+    excludeGlobs: [test_code]
+
+targets:
+  function:
+    language: typescript
+    root: code
+    query: |
+      (function_declaration) @code
+      (generator_function_declaration) @code
+      (function_expression) @code
+      (generator_function) @code
+      (arrow_function) @code
+      (method_definition) @code
+  named_function:
+    language: typescript
+    root: code
+    location: name
+    query: |
+      (function_declaration name: (identifier) @name) @code
+      (generator_function_declaration name: (identifier) @name) @code
+      (variable_declarator
+        name: (identifier) @name
+        value: [(arrow_function) (function_expression) (generator_function)]) @code
+      (
+        (method_definition name: [(property_identifier) (private_property_identifier)] @name) @code
+        (#not-eq? @name "constructor")
+      )
+  test_case:
+    language: typescript
+    root: code
+    location: name
+    query: |
+      (
+        (call_expression
+          function: (identifier) @runner
+          arguments: (arguments
+            . [(string) (template_string)] @name
+            . [(arrow_function) (function_expression)])) @code
+        (#any-of? @runner "it" "test")
+      )
+      (
+        (call_expression
+          function: (member_expression
+            object: (identifier) @runner
+            property: (property_identifier) @modifier)
+          arguments: (arguments
+            . [(string) (template_string)] @name
+            . [(arrow_function) (function_expression)])) @code
+        (#any-of? @runner "it" "test")
+        (#any-of? @modifier "only" "skip" "concurrent")
+      )
+
+conditions:
+  catches:
+    language: typescript
+    query: |
+      (try_statement handler: (catch_clause))
+  operational_logs:
+    language: typescript
+    query: |
+      (
+        (call_expression
+          function: (member_expression
+            object: (identifier) @_logger
+            property: (property_identifier) @_level))
+        (#any-of? @_logger "logger" "log")
+        (#any-of? @_level "info" "warn" "error")
+      )
+  timers:
+    language: typescript
+    query: |
+      (
+        (call_expression function: (identifier) @_timer)
+        (#eq? @_timer "setTimeout")
+      )
+      (
+        (call_expression function: (member_expression
+          property: (property_identifier) @_wait))
+        (#eq? @_wait "waitForTimeout")
+      )
+
+sections:
+  - name: application
+    language: typescript
+    files: source
+    rules:
+      - id: comments.narrates-code
+        target: comment
+        score: >-
+          Does `comment` merely narrate behavior already visible in `code`,
+          rather than explain a non-obvious reason, constraint, or caller-facing contract?
+        review:
+          yesMeans: undesirable
+          policy: [AGENTS.md]
+      - id: naming.describes-operation
+        target: named_function
+        files: runtime_only
+        score: >-
+          Does `name` accurately describe the operation and any important visible
+          side effects of `code`? Do not infer behavior from uncaptured callees.
+        review:
+          yesMeans: desirable
+          policy: [AGENTS.md]
+      - id: functions.mixes-responsibilities
+        target: named_function
+        files: runtime_only
+        score: >-
+          Does `code` combine independent responsibilities with no shared purpose
+          in the operation named by `name`? Different steps in one coherent workflow
+          are not unrelated responsibilities.
+        review:
+          yesMeans: undesirable
+          policy: [AGENTS.md]
+      - id: errors.hides-failure
+        target: function
+        files: runtime_only
+        includeIf: catches
+        context: []
+        score: >-
+          Does `code` turn a caught failure into apparent success without a failure
+          result, diagnostic, or justified recovery visible in this construct?
+          A documented optional lookup or explicit unsuccessful result is not hidden failure.
+        review:
+          yesMeans: undesirable
+          policy: [AGENTS.md]
+      - id: logging.narrates-progress
+        target: function
+        files: runtime_only
+        includeIf: operational_logs
+        score: >-
+          Does `code` log routine per-item progress at info, warn, or error level
+          instead of an operational outcome or problem useful for diagnosis?
+          Judge the visible log calls, not telemetry outside this construct.
+        review:
+          yesMeans: undesirable
+          policy: [AGENTS.md]
+      - id: logging.omits-context
+        target: function
+        files: runtime_only
+        includeIf: operational_logs
+        score: >-
+          Does a diagnostic in `code` omit non-sensitive operation or entity context
+          already visible here and necessary to distinguish the reported event?
+          An adequate operation-specific message needs no extra fields. Do not demand secrets.
+        review:
+          yesMeans: undesirable
+          policy: [AGENTS.md]
+
+  - name: tests
+    language: typescript
+    files: tests
+    rules:
+      - id: tests.title-describes-check
+        target: test_case
+        score: >-
+          Does `name` accurately describe what the visible setup and assertions in
+          `code` verify, rather than an outcome they do not actually check?
+        review:
+          yesMeans: desirable
+          policy: [AGENTS.md]
+
+  - name: browser-tests
+    language: typescript
+    files: e2e
+    rules:
+      - id: e2e.sleeps-for-state
+        target: test_case
+        includeIf: timers
+        score: >-
+          Does `code` use a sleep to guess when an observable condition will be ready,
+          rather than await that condition? A timer deliberately injecting fixture
+          latency or exercising time-dependent behavior is not such a wait.
+        review:
+          yesMeans: undesirable
+          policy: [AGENTS.md]

@@ -1,0 +1,70 @@
+{
+  "skill_name": "mushy-lint-run-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review an existing mushy-lint report without making new provider calls. Repository policy requires accurate function names and comments that explain constraints. The resolved rules registry has section names/rule quality with question 'Does name accurately describe the operation performed by code?' and section comments/rule quality with question 'Does comment merely restate code rather than explain a reason?'. Result evaluation-0 is names/quality at src/order.ts:1:10 with score 0.08, name ['storeOrder'], and code ['function storeOrder(input: string) { return input.trim(); }']. Result evaluation-1 is comments/quality at src/retry.ts:1:1 with score 0.96, comment ['The remote service deduplicates retries with this key.'], and code ['function send(key: string) { return gateway(key); }']. Both are evaluated. Result evaluation-2 is comments/quality with status not_evaluated, reason extraction_failed, message 'Comment has no attached construct.', and no score. A parse_error issue affects src/broken.ts. Provider is typesafe/model jev-1.13, exit status 2, token usage unknown. Use only this skill as mushy-lint documentation. Provide the scoring ledger and action plan, preserving questions and explaining which items should not be fixed. Do not edit files.",
+      "expected_output": "An evidence-backed review that treats the low positive naming score as a naming concern, disagrees with the high negative comment score based on explanatory evidence, and preserves blocked extraction and parse coverage separately.",
+      "expectations": [
+        "The two quality rule IDs are joined by section and rule rather than conflated.",
+        "The raw scores and exact questions are retained, with explicit desirable/undesirable directions.",
+        "The naming result gets a specific rename proposal with verification rather than a universal numerical cutoff.",
+        "The retry comment is left unchanged with a source-based explanation of classifier disagreement.",
+        "The unscored result is blocked, not assigned zero or declared compliant; the separate parse issue remains visible.",
+        "The output includes unknown usage and incomplete coverage and neither calls a provider nor edits files."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run mushy-lint on src/services with the existing mushy-lint.yaml using this skill. This authorizes classification of those files with the configured TypeSafe provider. The installed CLI is on PATH. During execution, preflight has 12 eligible pairs and one parse issue, and the live CLI exits 2 while returning valid JSON containing eight evaluated results and four request_failed results for timed-out requests after the configured retry budget. Usage is null. What should the review retain, how should you triage it, and what should you do next? Do not invent missing scores or re-run a paid check just to get exit zero. No further provider calls are authorized during this evaluation.",
+      "expected_output": "A bounded run/review procedure that captures raw stdout, stderr and exit separately, reviews valid scores with rule questions and evidence, records request/parse blockers, and identifies bounded recovery work without losing the partial report or broadening the scope.",
+      "expectations": [
+        "Commands target src/services, use --format json, and remove --dry-run for classification.",
+        "Exit 2 does not discard valid JSON or prevent evidence-based review of evaluated entries.",
+        "Request failures remain blocked without numeric scores and the parse issue is independent coverage loss.",
+        "Credential values are not printed, and timeouts do not justify switching providers or extending retries without authorization.",
+        "The procedure retains command/config/scope/raw artifacts and reports classification coverage separately from reasoning-review coverage.",
+        "The response does not broaden to the whole repository, add thresholds, edit source, or automatically rerun classification."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Triage a large existing branch-diff report without additional provider calls. It has 5,000 evaluated results, 90 exclusions, no request errors, and exit 0. The artifact is local and tool output shows only its first 100 entries. There is time to inspect 30 results. The user asks for the highest-value fixes and wants the remainder marked as safe to ignore. The same execution serves matching assessments at different file locations. Some questions describe desirable properties, some describe undesirable ones. The saved config and complete captured states are available, but one current file has changed since scoring. Use only this skill as mushy-lint documentation and do not change source or configuration.",
+      "expected_output": "A prioritized but explicitly sampled review with a complete raw-score ledger and rule registry, no blanket classification of unseen results, per-question interpretation, distinct source result identities, and stale-code handling.",
+      "expectations": [
+        "The response retrieves or references the complete artifact rather than treating truncated terminal output as the full report.",
+        "The review labels inspected and unreviewed counts explicitly and does not mark thousands of unseen results leave or compliant.",
+        "Question direction and source impact drive attention and priorities, not a global score cutoff or cross-rule average.",
+        "Shared executions do not collapse distinct file results or count as independent confirmations.",
+        "Stale source is flagged or re-anchored with explicit limits rather than receiving unverified line-specific fixes.",
+        "Exit zero and exclusions are not treated as evidence that the branch is clean; no provider call or automatic implementation occurs."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Review an existing version-2 report only. Repository policy requires accurate test titles. A desirable-question rule asks 'Does the test title describe what the assertions verify?' and gives score 0.89 to `test('preserves object key order', () => { expect({ second: 2, first: 1 }).toEqual({ first: 1, second: 2 }); });`. A comment rule gives undesirable-property score 0.53 to a comment explaining that an external service rejects duplicate IDs, next to code enforcing unique IDs; supporting policy confirms this external constraint. An empty callback comment now has complete enclosing `client.wait().catch(() => { /* optional widget may never appear */ })` evidence. The report has 17 configured rules but eligible results for only 11. Provide source-based decisions and report extraction, classification, and reasoning coverage separately. No new calls or edits are authorized.",
+      "expected_output": "A review that catches the ordering-test coverage gap despite the positive score, retains the documented external constraint, uses the callback's complete evidence, and names the six untested rules without claiming measured classifier accuracy.",
+      "expectations": [
+        "The ordering test gets an address decision because toEqual ignores object-key order, with explicit Object.keys assertions proposed.",
+        "The 0.89 score is retained unmodified and does not override source evidence.",
+        "The useful external-constraint comment is left unchanged based on policy/evidence rather than a 0.53 cutoff.",
+        "The callback comment is reviewed using the enclosing call instead of treated as an attachment failure or classified from comment text alone.",
+        "The six rules without eligible results are reported as untested, separate from reviewed-result counts.",
+        "No classifier accuracy rate, fabricated labels, provider call, or automatic source change is claimed."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run a random five-file review with the existing version-2 configuration. The CLI is installed, and OPENROUTER_API_KEY is absent from the process. I explicitly authorize reading only that variable from apps/server/.env and sending the selected source through the configured OpenRouter provider. Produce the preflight and classification commands and artifact/review procedure. Do not replace the provider, load unrelated dotenv variables, switch to stratified sampling, add a file-size cutoff, or write custom Python/Node sampling and report-joining scripts. No actual calls are authorized in this evaluation.",
+      "expected_output": "CLI-owned seeded random discovery/preflight/classification commands using an explicit credential file and private new artifact directory, followed by evidence-based completion of the generated registry and review ledger.",
+      "expectations": [
+        "Preflight and classification use --sample 5 and the same --seed within the agreed scope.",
+        "Random sampling remains random and no hidden size cutoff or handwritten glob matching is introduced.",
+        "The credential is loaded only through --credential-file apps/server/.env without printing secrets or importing all dotenv variables.",
+        "The command uses --artifacts with a new directory inside a private parent, preserving partial outcomes on exit 2.",
+        "The procedure uses resolved rules, per-rule coverage, source hashes, and the undecided review ledger rather than reconstructing them in custom scripts.",
+        "The response does not claim to have classified code during this no-call evaluation."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+version: 2
+classification:
+  provider: typesafe
+  model: jev-latest
+
+globs:
+  generated: ["**/*.d.ts", "**/generated/**", "**/node_modules/**"]
+fileSets:
+  source:
+    include: ["**/*.ts", "**/*.tsx"]
+    excludeGlobs: [generated]
+
+sections:
+  - name: typescript
+    language: typescript
+    files: source
+    rules:
+      - id: comment.narrates-code
+        target: comment
+        score: Does `comment` restate what `code` does, adding nothing the code itself shows?
+      - id: comment.justifies-the-unsurprising
+        target: comment
+        score: Does `comment` justify a choice in `code` that a competent reader would not have questioned?
+      - id: comment.explains-library
+        target: comment
+        score: Does `comment` explain how a third-party library, option, or API behaves in general, rather than something specific to this code?
+      - id: comment.decision-record
+        target: comment
+        score: Does `comment` record decision history behind `code`, such as alternatives considered, measured costs, benchmarks, or external documentation?
+      - id: comment.references-work-item
+        target: comment
+        score: Does `comment` refer to a ticket, pull request, project, migration, or task that produced the code?
+      - id: comment.framed-against-past
+        target: comment
+        score: Does `comment` describe how the code used to behave, or contrast `code` with an earlier version?

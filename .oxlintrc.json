@@ -1,0 +1,74 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript"
+  ],
+  "jsPlugins": [
+    {
+      "name": "anti-slop",
+      "specifier": "./tools/oxlint/anti-slop/index.ts"
+    }
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "complexity": "error",
+    "eqeqeq": "error",
+    "no-console": "warn",
+    "no-debugger": "error",
+    "no-constant-condition": "error",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "no-empty": "warn",
+    "no-case-declarations": "error",
+    "no-self-compare": "error",
+    "no-throw-literal": "error",
+    "no-unreachable": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-async-promise-executor": "error",
+    "no-await-in-loop": "warn",
+    "no-compare-neg-zero": "error",
+    "no-const-assign": "error",
+    "no-global-assign": "error",
+    "no-self-assign": "error",
+    "no-prototype-builtins": "warn",
+    "@typescript-eslint/no-explicit-any": "error",
+    "curly": "error",
+    "no-implicit-coercion": "error",
+    "no-multi-str": "error",
+    "no-unneeded-ternary": "error",
+    "no-nested-ternary": "error",
+    "symbol-description": "error",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "anti-slop/no-chained-type-assertions": "error",
+    "anti-slop/no-conditional-empty-object-spread": "error",
+    "anti-slop/no-known-value-widening": "error",
+    "anti-slop/no-module-mocking": "error",
+    "anti-slop/no-object-parameters": "error",
+    "anti-slop/no-reflect-apply": "error",
+    "anti-slop/no-reflect-get": "error",
+    "anti-slop/no-runtime-typeof": "error",
+    "anti-slop/no-shape-in-symbol-names": "error",
+    "anti-slop/no-unknown-parameters": "error",
+    "anti-slop/no-unknown-returns": "error",
+    "anti-slop/no-unknown-type-aliases": "error",
+    "anti-slop/no-unsafe-dictionary-type": "error",
+    "anti-slop/no-widen-then-assert": "error",
+    "anti-slop/require-safety-comment-for-type-assertion": "error"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "out",
+    "*.config.*",
+    "tools/oxlint/anti-slop/**"
+  ]
+}

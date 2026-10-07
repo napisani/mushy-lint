@@ -1,0 +1,48 @@
+version: 2
+classification:
+  provider: openrouter
+  model: typesafe/jev-1.13
+
+globs:
+  generated: ["**/*.d.ts", "**/generated/**", "**/node_modules/**"]
+fileSets:
+  source:
+    include: ["**/*.ts", "**/*.tsx"]
+    excludeGlobs: [generated]
+targets:
+  function:
+    language: typescript
+    root: code
+    query: |
+      (function_declaration) @code
+      (function_expression) @code
+      (arrow_function) @code
+      (method_definition) @code
+  named_function:
+    language: typescript
+    root: code
+    location: name
+    query: |
+      (function_declaration name: (identifier) @name) @code
+conditions:
+  catches:
+    language: typescript
+    query: |
+      (try_statement handler: (catch_clause))
+
+sections:
+  - name: typescript
+    language: typescript
+    files: source
+    rules:
+      - id: functions.discards-error
+        target: function
+        includeIf: catches
+        score: Does `code` discard a caught error without communicating failure to its caller?
+        review:
+          yesMeans: undesirable
+      - id: naming.function-name-is-verb
+        target: named_function
+        score: Is `name` a verb or verb phrase describing the action or check performed by `code`?
+        review:
+          yesMeans: desirable

@@ -1,0 +1,21 @@
+{
+  "lockHash": "2a936052a3c1237d55ad466cf772aeb0b695ca632c211c84993420653c3f74d9",
+  "packages": {
+    "argparse": {
+      "url": "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz",
+      "hash": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="
+    },
+    "js-yaml": {
+      "url": "https://registry.npmjs.org/js-yaml/-/js-yaml-5.4.2.tgz",
+      "hash": "sha512-m+aqu+LwO1O6sIopafj8HUVl5aawITwZQe/yHpMCKjaWBaA/d07B/QdMb3529REftiU+RMMHL3Vlsw3hON7vWg=="
+    },
+    "web-tree-sitter": {
+      "url": "https://registry.npmjs.org/web-tree-sitter/-/web-tree-sitter-0.27.0.tgz",
+      "hash": "sha512-XK08gj6RwTMQatAG7uVRP8MunqotL/XC19vHgkSPKmELgbGPBj4ECvB8haHOUnyj6ls2B8t42UTro14zxGgAHg=="
+    },
+    "zod": {
+      "url": "https://registry.npmjs.org/zod/-/zod-4.6.5.tgz",
+      "hash": "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q=="
+    }
+  }
+}
